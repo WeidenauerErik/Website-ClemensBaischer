@@ -1,0 +1,53 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #efece7;
+}
+
+body {
+  font-family: 'Spectral', Georgia, serif;
+  color: #545454;
+}
+
+a {
+  color: #545454;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #2f2f2f;
+}
+
+::selection {
+  background: #dcd6cc;
+}
+
+button {
+  font: inherit;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
