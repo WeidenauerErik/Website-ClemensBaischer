@@ -9,7 +9,7 @@ const goUeber = () => router.push({ name: 'ueber-uns' })
 <template>
   <main class="home">
     <section class="hero">
-      <img src="/images/catering.jpeg" alt="Buffet von Baischer Catering" class="hero__image">
+      <img src="/images/catering-buffet-hero.jpeg" alt="Aufgebautes Buffet von Baischer Catering im Gewölbe" class="hero__image">
       <div class="hero__overlay"></div>
       <div class="hero__content">
         <p class="eyebrow eyebrow--on-dark">Neukirchen an der Enknach · Oberösterreich</p>
@@ -17,7 +17,7 @@ const goUeber = () => router.push({ name: 'ueber-uns' })
         <div class="hero__row">
           <p class="hero__text">
             Kalte Platten, Buffets und Festküchen-Betreuung aus eigener Fleischerei. Vom
-            Firmenfest bis zur Hochzeit — zubereitet, geliefert, angerichtet.
+            Firmenfest bis zur Hochzeit: zubereitet, geliefert, angerichtet.
           </p>
           <button class="btn btn--light" @click="goKontakt">Angebot anfragen</button>
         </div>

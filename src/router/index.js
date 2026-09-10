@@ -13,7 +13,7 @@ const router = createRouter({
       meta: {
         title: 'Baischer Fleischerei & Catering',
         description:
-          'Baischer Fleischerei & Catering in Neukirchen an der Enknach — Catering für jedes Event sowie Fleisch und Wurstwaren aus eigener Produktion.',
+          'Baischer Fleischerei & Catering in Neukirchen an der Enknach: Catering für jedes Event sowie Fleisch und Wurstwaren aus eigener Produktion.',
       },
     },
     {

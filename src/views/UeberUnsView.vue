@@ -11,12 +11,12 @@
           <p class="content__text">
             Baischer Fleischerei &amp; Catering ist ein Betrieb in Neukirchen an der Enknach.
             Fleisch und Wurstwaren aus eigener Produktion, Lohnschlachtung für Landwirte aus der
-            Umgebung und Catering für jedes Event — von der kleinen Feier bis zur
+            Umgebung und Catering für jedes Event, von der kleinen Feier bis zur
             Festküchen-Betreuung.
           </p>
           <p class="content__text">
-            Clemens Baischer vertrat Österreich bei den EuroSkills im Fleischerhandwerk. Was
-            dort zählt — Präzision, Schnitt, Präsentation — bestimmt bei uns den Alltag.
+            Clemens Baischer vertrat Österreich bei den EuroSkills im Fleischerhandwerk.
+            Präzision, Schnitt und Präsentation zählen dort genauso wie bei uns im Alltag.
           </p>
         </div>
         <img src="/images/clemens-baischer.jpeg" alt="Clemens Baischer bei der Arbeit" class="content__image">

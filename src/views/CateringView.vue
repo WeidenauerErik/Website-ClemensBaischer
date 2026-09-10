@@ -38,6 +38,26 @@ const galleryImages = [
     src: '/images/catering-plating.jpeg',
     alt: 'Baischer Catering-Team beim finalen Anrichten der Vorspeisenteller',
   },
+  {
+    src: '/images/catering-theke.jpeg',
+    alt: 'Clemens Baischer an der Frischetheke der Fleischerei',
+  },
+  {
+    src: '/images/catering-buffet-schloss.jpeg',
+    alt: 'Elegantes Buffet mit kalten Platten bei einem Baischer Catering-Event im Gewölbe',
+  },
+  {
+    src: '/images/catering-buffet-hero.jpeg',
+    alt: 'Aufgebautes Buffet mit Vorspeisenplatten und Antipasti von Baischer Catering',
+  },
+  {
+    src: '/images/catering-buffet-modern.jpeg',
+    alt: 'Aufschnitt- und Antipastiplatten auf einem gedeckten Tisch bei einem Baischer Catering-Event',
+  },
+  {
+    src: '/images/catering-vorbereitung.jpeg',
+    alt: 'Baischer Catering-Mitarbeiter beim Anrichten von Vorspeisen am Grill',
+  },
 ]
 
 const lightboxIndex = ref(null)
@@ -84,7 +104,7 @@ watch(lightboxIndex, (index) => {
       <div class="intro__grid">
         <h1 class="intro__title">Catering für jeden Anlass</h1>
         <p class="intro__text">
-          Ob zwanzig Gäste im Garten oder vierhundert im Festzelt — wir stellen das Menü
+          Ob zwanzig Gäste im Garten oder vierhundert im Festzelt: Wir stellen das Menü
           zusammen, liefern frisch und richten vor Ort an.
         </p>
       </div>
@@ -144,7 +164,7 @@ watch(lightboxIndex, (index) => {
     <section class="cta">
       <div class="cta__row">
         <p class="cta__text">
-          Sagen Sie uns Anlass, Termin und Gästezahl — wir rechnen ein Angebot durch.
+          Sagen Sie uns Anlass, Termin und Gästezahl. Wir rechnen ein Angebot durch.
         </p>
         <button class="btn btn--dark" @click="goKontakt">Kontakt aufnehmen</button>
       </div>
