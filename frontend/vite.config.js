@@ -15,4 +15,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    proxy: {
+      // Requires the backend stack running (`docker compose up -d api database`)
+      // and reachable through the web container's proxy on this port.
+      '/api': 'http://localhost:8080',
+    },
+  },
 })

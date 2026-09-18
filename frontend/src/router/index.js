@@ -37,6 +37,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/vermietung',
+      name: 'vermietung',
+      component: () => import('../views/Vermietung.vue'),
+      meta: {
+        title: 'Fahrzeuge mieten',
+        description:
+          'Fahrzeuge mieten bei Baischer Fleischerei & Catering in Neukirchen an der Enknach: Verfügbarkeit prüfen und unverbindlich anfragen.',
+      },
+    },
+    {
       path: '/kontakt',
       name: 'kontakt',
       component: () => import('../views/KontaktView.vue'),

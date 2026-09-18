@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 const navItems = [
   { label: 'Start', to: { name: 'home' } },
   { label: 'Catering', to: { name: 'catering' } },
+  { label: 'Vermietung', to: { name: 'vermietung' } },
   { label: 'Über uns', to: { name: 'ueber-uns' } },
   { label: 'Kontakt', to: { name: 'kontakt' } },
 ]

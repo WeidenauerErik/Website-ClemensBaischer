@@ -1,0 +1,610 @@
+{% extends ea() is not null ? ea().templatePath('layout') : '@EasyAdmin/layout.html.twig' %}
+
+{% block content_title %}{{ trailer.name }} · Kalender{% endblock %}
+
+{% block main %}
+<style>
+    .ea-calendar {
+        --bk-blue-dark: #003b95;
+        --bk-blue: #0071c2;
+        --bk-blue-light: #e4f0fc;
+        --bk-border: #e7e7e7;
+        --bk-text: #262626;
+        --bk-muted: #6b6b6b;
+        --bk-danger: #cc0000;
+        --bk-customer: #008009;
+        --bk-blocked: #6b6b6b;
+        max-width: 980px;
+    }
+
+    .ea-calendar__hint {
+        color: var(--bk-muted);
+        font-size: 14px;
+        margin: 0 0 16px;
+    }
+
+    .ea-calendar__legend {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        color: var(--bk-muted);
+    }
+
+    .ea-calendar__legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ea-calendar__swatch {
+        width: 11px;
+        height: 11px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    .ea-calendar__swatch--customer { background: var(--bk-customer); }
+    .ea-calendar__swatch--blocked { background: var(--bk-blocked); }
+
+    #ea-calendar-root {
+        background: #fff;
+        border: 1px solid var(--bk-border);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    }
+
+    .ea-calendar .fc {
+        --fc-border-color: var(--bk-border);
+        --fc-today-bg-color: var(--bk-blue-light);
+        --fc-button-bg-color: #fff;
+        --fc-button-border-color: var(--bk-border);
+        --fc-button-text-color: var(--bk-text);
+        --fc-button-hover-bg-color: #f2f6fc;
+        --fc-button-hover-border-color: var(--bk-blue);
+        --fc-button-active-bg-color: var(--bk-blue-light);
+        --fc-button-active-border-color: var(--bk-blue);
+        font-family: inherit;
+    }
+
+    .ea-calendar .fc .fc-toolbar-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--bk-text);
+    }
+
+    .ea-calendar .fc .fc-button {
+        text-transform: none;
+        box-shadow: none !important;
+        font-weight: 600;
+        border-radius: 6px !important;
+    }
+
+    .ea-calendar .fc-daygrid-day-number {
+        color: var(--bk-text);
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+
+    .ea-calendar .fc-col-header-cell {
+        background: #fafafa;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: .04em;
+        color: var(--bk-muted);
+    }
+
+    .ea-calendar .ea-event {
+        border: none !important;
+        border-radius: 5px !important;
+        padding: 1px 6px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .ea-calendar .ea-event--customer {
+        background: color-mix(in srgb, var(--bk-customer) 14%, white) !important;
+        border-left: 3px solid var(--bk-customer) !important;
+        color: #04521a !important;
+    }
+
+    .ea-calendar .ea-event--blocked {
+        background: #eee !important;
+        border-left: 3px solid var(--bk-blocked) !important;
+        color: #3a3a3a !important;
+    }
+
+    /* Modal */
+    .ea-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ea-modal__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 25, 40, .55);
+    }
+
+    .ea-modal__dialog {
+        position: relative;
+        background: #fff;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 440px;
+        margin: 16px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, .28);
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 32px);
+    }
+
+    .ea-modal__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--bk-border, #e7e7e7);
+    }
+
+    .ea-modal__header h2 {
+        font-size: 17px;
+        margin: 0;
+        color: #262626;
+    }
+
+    .ea-modal__close {
+        border: none;
+        background: transparent;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        color: #6b6b6b;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .ea-modal__close:hover { background: #f2f2f2; }
+
+    .ea-modal__source {
+        margin: 16px 20px 0;
+        padding: 12px 14px;
+        background: #f5f5f5;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+    .ea-modal__source strong {
+        display: block;
+        color: #262626;
+        margin-bottom: 2px;
+    }
+
+    .ea-modal__source span {
+        color: #6b6b6b;
+    }
+
+    .ea-modal__source p {
+        margin: 8px 0 0;
+        color: #262626;
+    }
+
+    .ea-modal__body {
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .ea-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .ea-form-field,
+    .ea-form-row label:not(.ea-segmented) {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+        color: #6b6b6b;
+    }
+
+    .ea-form-field input,
+    .ea-form-field textarea,
+    .ea-form-row input[type="date"] {
+        font: inherit;
+        padding: 9px 10px;
+        border: 1px solid #d6d6d6;
+        border-radius: 6px;
+        background: #fff;
+        color: #262626;
+        color-scheme: light;
+    }
+
+    .ea-form-field textarea { resize: vertical; }
+
+    .ea-customer-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ea-customer-fields[hidden] { display: none; }
+
+    .ea-segmented {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #d6d6d6;
+        border-radius: 6px;
+        padding: 9px 12px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #262626;
+    }
+
+    .ea-segmented:has(input:checked) {
+        border-color: var(--bk-blue, #0071c2);
+        background: var(--bk-blue-light, #e4f0fc);
+        color: var(--bk-blue-dark, #003b95);
+        font-weight: 600;
+    }
+
+    .ea-form-error {
+        background: #fdecea;
+        color: #a4262c;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .ea-modal__footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 20px;
+        border-top: 1px solid #e7e7e7;
+    }
+
+    .ea-modal__footer-spacer { flex: 1; }
+
+    .ea-btn {
+        border: none;
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .ea-btn--primary { background: var(--bk-blue, #0071c2); color: #fff; }
+    .ea-btn--primary:hover { background: var(--bk-blue-dark, #003b95); }
+    .ea-btn--ghost { background: transparent; color: #262626; }
+    .ea-btn--ghost:hover { background: #f2f2f2; }
+    .ea-btn--danger { background: transparent; color: var(--bk-danger, #cc0000); }
+    .ea-btn--danger:hover { background: #fdecea; }
+    .ea-btn--danger.ea-btn--confirm { background: var(--bk-danger, #cc0000); color: #fff; }
+</style>
+
+<div class="ea-calendar" data-trailer-id="{{ trailer.id }}">
+    <p class="ea-calendar__hint">
+        Freien Zeitraum per Klick-und-Ziehen auswählen, um eine Buchung oder Sperre anzulegen.
+        Bestehenden Eintrag anklicken, um ihn zu bearbeiten oder zu löschen.
+    </p>
+
+    <div class="ea-calendar__legend">
+        <span><i class="ea-calendar__swatch ea-calendar__swatch--customer"></i> Kundenbuchung</span>
+        <span><i class="ea-calendar__swatch ea-calendar__swatch--blocked"></i> Gesperrt (Wartung o. ä.)</span>
+    </div>
+
+    <div id="ea-calendar-root"></div>
+</div>
+
+<div id="ea-booking-modal" class="ea-modal" hidden>
+    <div class="ea-modal__backdrop" data-close></div>
+    <div class="ea-modal__dialog" role="dialog" aria-modal="true">
+        <header class="ea-modal__header">
+            <h2 id="ea-booking-modal-title">Neue Buchung</h2>
+            <button type="button" class="ea-modal__close" data-close aria-label="Schließen">&times;</button>
+        </header>
+
+        <div id="ea-booking-modal-source" class="ea-modal__source" hidden></div>
+
+        <form id="ea-booking-form" class="ea-modal__body">
+            <div class="ea-form-row">
+                <label>
+                    <span>Von</span>
+                    <input type="date" name="startDate" required>
+                </label>
+                <label>
+                    <span>Bis</span>
+                    <input type="date" name="endDate" required>
+                </label>
+            </div>
+
+            <div class="ea-form-row">
+                <label class="ea-segmented">
+                    <input type="radio" name="type" value="customer" checked>
+                    <span>Kundenbuchung</span>
+                </label>
+                <label class="ea-segmented">
+                    <input type="radio" name="type" value="blocked">
+                    <span>Gesperrt</span>
+                </label>
+            </div>
+
+            <div id="ea-customer-fields" class="ea-customer-fields">
+                <div class="ea-form-row">
+                    <label class="ea-form-field">
+                        <span>Vorname</span>
+                        <input type="text" name="customerFirstName" autocomplete="off">
+                    </label>
+                    <label class="ea-form-field">
+                        <span>Nachname</span>
+                        <input type="text" name="customerLastName" autocomplete="off">
+                    </label>
+                </div>
+                <div class="ea-form-row">
+                    <label class="ea-form-field">
+                        <span>E-Mail</span>
+                        <input type="email" name="customerEmail" autocomplete="off">
+                    </label>
+                    <label class="ea-form-field">
+                        <span>Telefon</span>
+                        <input type="tel" name="customerPhone" autocomplete="off">
+                    </label>
+                </div>
+            </div>
+
+            <label class="ea-form-field">
+                <span>Notiz</span>
+                <textarea name="note" rows="3" placeholder="Optional"></textarea>
+            </label>
+
+            <p id="ea-booking-form-error" class="ea-form-error" hidden></p>
+        </form>
+
+        <footer class="ea-modal__footer">
+            <button type="button" id="ea-booking-delete" class="ea-btn ea-btn--danger" hidden>Löschen</button>
+            <span class="ea-modal__footer-spacer"></span>
+            <button type="button" class="ea-btn ea-btn--ghost" data-close>Abbrechen</button>
+            <button type="submit" form="ea-booking-form" class="ea-btn ea-btn--primary">Speichern</button>
+        </footer>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script>
+(function () {
+    const apiBase = '/admin/api';
+    const trailerId = document.querySelector('.ea-calendar').dataset.trailerId;
+
+    const modal = document.getElementById('ea-booking-modal');
+    const form = document.getElementById('ea-booking-form');
+    const formError = document.getElementById('ea-booking-form-error');
+    const sourceBox = document.getElementById('ea-booking-modal-source');
+    const deleteBtn = document.getElementById('ea-booking-delete');
+    const modalTitle = document.getElementById('ea-booking-modal-title');
+    const customerFields = document.getElementById('ea-customer-fields');
+    const customerInputs = customerFields.querySelectorAll('input');
+
+    let editingBookingId = null;
+    let calendar;
+
+    function updateCustomerFieldsVisibility() {
+        const isCustomer = form.type.value === 'customer';
+        customerFields.hidden = !isCustomer;
+        customerInputs.forEach((input) => {
+            if (input.name === 'customerPhone' || input.name === 'customerFirstName' || input.name === 'customerLastName' || input.name === 'customerEmail') {
+                input.required = isCustomer;
+            }
+        });
+    }
+
+    Array.from(form.elements).forEach((el) => {
+        if (el.name === 'type') el.addEventListener('change', updateCustomerFieldsVisibility);
+    });
+
+    function openModal() {
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        formError.hidden = true;
+        sourceBox.hidden = true;
+        editingBookingId = null;
+        deleteBtn.hidden = true;
+        deleteBtn.textContent = 'Löschen';
+        deleteBtn.classList.remove('ea-btn--confirm');
+        form.reset();
+    }
+
+    modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.hidden) closeModal();
+    });
+
+    function openForCreate(startDate, endDate) {
+        editingBookingId = null;
+        modalTitle.textContent = 'Neue Buchung';
+        form.startDate.value = startDate;
+        form.endDate.value = endDate;
+        form.type.value = 'customer';
+        form.note.value = '';
+        form.customerFirstName.value = '';
+        form.customerLastName.value = '';
+        form.customerEmail.value = '';
+        form.customerPhone.value = '';
+        updateCustomerFieldsVisibility();
+        deleteBtn.hidden = true;
+        sourceBox.hidden = true;
+        openModal();
+    }
+
+    function openForEdit(booking) {
+        editingBookingId = booking.id;
+        modalTitle.textContent = 'Buchung bearbeiten';
+        form.startDate.value = booking.start;
+        form.endDate.value = booking.end;
+        form.type.value = booking.type;
+        form.note.value = booking.note || '';
+        form.customerFirstName.value = booking.customerFirstName || '';
+        form.customerLastName.value = booking.customerLastName || '';
+        form.customerEmail.value = booking.customerEmail || '';
+        form.customerPhone.value = booking.customerPhone || '';
+        updateCustomerFieldsVisibility();
+        deleteBtn.hidden = false;
+
+        if (booking.sourceRequest) {
+            sourceBox.hidden = false;
+            sourceBox.innerHTML =
+                '<strong>Angefragt von: ' + escapeHtml(booking.sourceRequest.customerName) + '</strong>' +
+                '<span>' + escapeHtml(booking.sourceRequest.email) + ' · ' + escapeHtml(booking.sourceRequest.phone) + '</span>' +
+                (booking.sourceRequest.message ? '<p>' + escapeHtml(booking.sourceRequest.message) + '</p>' : '');
+        } else {
+            sourceBox.hidden = true;
+        }
+
+        openModal();
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function api(path, options) {
+        const res = await fetch(apiBase + path, {
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            ...options,
+        });
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            const err = new Error(body.detail || body.title || res.statusText);
+            err.status = res.status;
+            throw err;
+        }
+        return res.status === 204 ? null : res.json();
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        formError.hidden = true;
+
+        const payload = {
+            startDate: form.startDate.value,
+            endDate: form.endDate.value,
+            type: form.type.value,
+            note: form.note.value || null,
+            customerFirstName: form.customerFirstName.value || null,
+            customerLastName: form.customerLastName.value || null,
+            customerEmail: form.customerEmail.value || null,
+            customerPhone: form.customerPhone.value || null,
+        };
+
+        try {
+            if (editingBookingId) {
+                await api('/bookings/' + editingBookingId, { method: 'PATCH', body: JSON.stringify(payload) });
+            } else {
+                await api('/trailers/' + trailerId + '/bookings', { method: 'POST', body: JSON.stringify(payload) });
+            }
+            closeModal();
+            calendar.refetchEvents();
+        } catch (err) {
+            formError.textContent = err.status === 409
+                ? 'Dieser Zeitraum überschneidet sich mit einer bestehenden Buchung.'
+                : (err.message || 'Speichern fehlgeschlagen.');
+            formError.hidden = false;
+        }
+    });
+
+    deleteBtn.addEventListener('click', async () => {
+        if (!deleteBtn.classList.contains('ea-btn--confirm')) {
+            deleteBtn.classList.add('ea-btn--confirm');
+            deleteBtn.textContent = 'Wirklich löschen?';
+            setTimeout(() => {
+                deleteBtn.classList.remove('ea-btn--confirm');
+                deleteBtn.textContent = 'Löschen';
+            }, 4000);
+            return;
+        }
+
+        try {
+            await api('/bookings/' + editingBookingId, { method: 'DELETE' });
+            closeModal();
+            calendar.refetchEvents();
+        } catch (err) {
+            formError.textContent = err.message || 'Löschen fehlgeschlagen.';
+            formError.hidden = false;
+        }
+    });
+
+    function addDaysIso(isoDate, days) {
+        const d = new Date(isoDate + 'T00:00:00');
+        d.setDate(d.getDate() + days);
+        return d.toISOString().slice(0, 10);
+    }
+
+    function toIsoDate(d) {
+        return d.toISOString().slice(0, 10);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('ea-calendar-root');
+
+        calendar = new FullCalendar.Calendar(el, {
+            locale: 'de',
+            initialView: 'dayGridMonth',
+            height: 'auto',
+            selectable: true,
+            selectMirror: true,
+            headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+            events: async (info, successCallback, failureCallback) => {
+                try {
+                    const from = info.startStr.slice(0, 10);
+                    const to = info.endStr.slice(0, 10);
+                    const bookings = await api('/trailers/' + trailerId + '/bookings?from=' + from + '&to=' + to);
+                    successCallback(bookings.map((booking) => ({
+                        id: String(booking.id),
+                        title: booking.type === 'customer'
+                            ? ([booking.customerFirstName, booking.customerLastName].filter(Boolean).join(' ') || 'Kundenbuchung')
+                            : 'Gesperrt',
+                        start: booking.start,
+                        end: addDaysIso(booking.end, 1),
+                        classNames: ['ea-event', booking.type === 'customer' ? 'ea-event--customer' : 'ea-event--blocked'],
+                        extendedProps: { booking },
+                    })));
+                } catch (err) {
+                    failureCallback(err);
+                }
+            },
+            select: (selection) => {
+                calendar.unselect();
+                const end = new Date(selection.end);
+                end.setDate(end.getDate() - 1); // FullCalendar's end is exclusive; our API end date is inclusive
+                openForCreate(toIsoDate(selection.start), toIsoDate(end));
+            },
+            eventClick: (clickInfo) => {
+                openForEdit(clickInfo.event.extendedProps.booking);
+            },
+        });
+
+        calendar.render();
+    });
+})();
+</script>
+{% endblock %}
