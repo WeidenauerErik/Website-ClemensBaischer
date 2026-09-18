@@ -6,7 +6,7 @@ services:
     expose:
       - "80"
     ports:
-      - "${WEB_PORT:-8080}:80"
+      - "${WEB_PORT:-8087}:80"
     restart: unless-stopped
     depends_on:
       - api
