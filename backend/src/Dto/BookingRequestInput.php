@@ -36,6 +36,12 @@ final class BookingRequestInput
     #[Assert\Date]
     public string $endDate = '';
 
+    #[Assert\Regex(pattern: '/^([01]\d|2[0-3]):[0-5]\d$/', message: 'Bitte eine gültige Uhrzeit angeben (HH:MM).')]
+    public ?string $startTime = null;
+
+    #[Assert\Regex(pattern: '/^([01]\d|2[0-3]):[0-5]\d$/', message: 'Bitte eine gültige Uhrzeit angeben (HH:MM).')]
+    public ?string $endTime = null;
+
     /**
      * Honeypot field: must stay empty. Real visitors never see or fill it;
      * bots that auto-fill every input will, letting us silently drop the submission.

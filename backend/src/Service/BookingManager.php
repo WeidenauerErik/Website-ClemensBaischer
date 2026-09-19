@@ -35,10 +35,12 @@ final class BookingManager
         ?string $customerLastName = null,
         ?string $customerEmail = null,
         ?string $customerPhone = null,
+        ?string $startTime = null,
+        ?string $endTime = null,
     ): Booking {
         $this->assertNoOverlap($trailer, $start, $end);
 
-        $booking = new Booking($trailer, $start, $end, $type, $createdBy);
+        $booking = new Booking($trailer, $start, $end, $type, $createdBy, $startTime, $endTime);
         $booking->setNote($note);
         $booking->setCustomerFirstName($customerFirstName);
         $booking->setCustomerLastName($customerLastName);
@@ -64,10 +66,13 @@ final class BookingManager
         ?string $customerLastName = null,
         ?string $customerEmail = null,
         ?string $customerPhone = null,
+        ?string $startTime = null,
+        ?string $endTime = null,
     ): Booking {
         $this->assertNoOverlap($booking->getTrailer(), $start, $end, $booking);
 
         $booking->setStartDate($start)->setEndDate($end)->setType($type)->setNote($note);
+        $booking->setStartTime($startTime)->setEndTime($endTime);
         $booking->setCustomerFirstName(BookingType::Customer === $type ? $customerFirstName : null);
         $booking->setCustomerLastName(BookingType::Customer === $type ? $customerLastName : null);
         $booking->setCustomerEmail(BookingType::Customer === $type ? $customerEmail : null);
@@ -101,6 +106,8 @@ final class BookingManager
             $request->getLastName(),
             $request->getEmail(),
             $request->getPhone(),
+            $request->getStartTime(),
+            $request->getEndTime(),
         );
 
         $request->setStatus(BookingRequestStatus::Approved);

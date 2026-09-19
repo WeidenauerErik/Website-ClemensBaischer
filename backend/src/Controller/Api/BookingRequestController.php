@@ -68,6 +68,8 @@ final class BookingRequestController extends AbstractController
             $startDate,
             $endDate,
             null !== $input->message && '' !== trim($input->message) ? trim($input->message) : null,
+            $input->startTime,
+            $input->endTime,
         );
 
         $em->persist($bookingRequest);

@@ -41,6 +41,12 @@ class BookingRequest
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $endDate;
 
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $startTime = null;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $endTime = null;
+
     #[ORM\Column(length: 20, enumType: BookingRequestStatus::class)]
     private BookingRequestStatus $status = BookingRequestStatus::Pending;
 
@@ -69,6 +75,8 @@ class BookingRequest
         \DateTimeImmutable $startDate,
         \DateTimeImmutable $endDate,
         ?string $message = null,
+        ?string $startTime = null,
+        ?string $endTime = null,
     ) {
         $this->trailer = $trailer;
         $this->firstName = $firstName;
@@ -77,6 +85,8 @@ class BookingRequest
         $this->phone = $phone;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->startTime = $startTime;
+        $this->endTime = $endTime;
         $this->message = $message;
         $this->createdAt = new \DateTimeImmutable();
     }
@@ -143,6 +153,16 @@ class BookingRequest
         $this->endDate = $endDate;
 
         return $this;
+    }
+
+    public function getStartTime(): ?string
+    {
+        return $this->startTime;
+    }
+
+    public function getEndTime(): ?string
+    {
+        return $this->endTime;
     }
 
     public function getStatus(): BookingRequestStatus

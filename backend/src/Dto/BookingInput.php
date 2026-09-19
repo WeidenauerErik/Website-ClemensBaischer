@@ -16,6 +16,12 @@ final class BookingInput
     #[Assert\Date]
     public string $endDate = '';
 
+    #[Assert\Regex(pattern: '/^([01]\d|2[0-3]):[0-5]\d$/', message: 'Bitte eine Uhrzeit im Format HH:MM angeben.')]
+    public ?string $startTime = null;
+
+    #[Assert\Regex(pattern: '/^([01]\d|2[0-3]):[0-5]\d$/', message: 'Bitte eine Uhrzeit im Format HH:MM angeben.')]
+    public ?string $endTime = null;
+
     #[Assert\NotBlank]
     #[Assert\Choice(choices: ['customer', 'blocked'])]
     public string $type = 'blocked';

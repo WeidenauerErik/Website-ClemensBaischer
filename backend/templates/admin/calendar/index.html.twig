@@ -219,7 +219,8 @@
 
     .ea-form-field input,
     .ea-form-field textarea,
-    .ea-form-row input[type="date"] {
+    .ea-form-row input[type="date"],
+    .ea-form-row input[type="time"] {
         font: inherit;
         padding: 9px 10px;
         border: 1px solid #d6d6d6;
@@ -293,6 +294,68 @@
     .ea-btn--danger { background: transparent; color: var(--bk-danger, #cc0000); }
     .ea-btn--danger:hover { background: #fdecea; }
     .ea-btn--danger.ea-btn--confirm { background: var(--bk-danger, #cc0000); color: #fff; }
+
+    @media (max-width: 640px) {
+        .ea-calendar__legend {
+            flex-wrap: wrap;
+            gap: 10px 20px;
+        }
+
+        #ea-calendar-root {
+            padding: 10px;
+        }
+
+        .ea-calendar .fc .fc-toolbar {
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .ea-calendar .fc .fc-toolbar-title {
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .ea-calendar .fc .fc-button {
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        .ea-calendar .fc-daygrid-day-number {
+            font-size: 11px;
+            padding: 3px 4px;
+        }
+
+        .ea-calendar .ea-event {
+            font-size: 10px;
+            padding: 0 3px;
+        }
+
+        .ea-form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .ea-modal__dialog {
+            margin: 0;
+            max-width: 100%;
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+            border-radius: 0;
+        }
+
+        .ea-modal__footer {
+            flex-wrap: wrap;
+        }
+
+        .ea-modal__footer-spacer {
+            display: none;
+        }
+
+        .ea-modal__footer .ea-btn {
+            flex: 1 1 auto;
+        }
+    }
 </style>
 
 <div class="ea-calendar" data-trailer-id="{{ trailer.id }}">
@@ -328,6 +391,17 @@
                 <label>
                     <span>Bis</span>
                     <input type="date" name="endDate" required>
+                </label>
+            </div>
+
+            <div class="ea-form-row">
+                <label>
+                    <span>Uhrzeit Abholung</span>
+                    <input type="time" name="startTime">
+                </label>
+                <label>
+                    <span>Uhrzeit Rückgabe</span>
+                    <input type="time" name="endTime">
                 </label>
             </div>
 
@@ -441,6 +515,8 @@
         modalTitle.textContent = 'Neue Buchung';
         form.startDate.value = startDate;
         form.endDate.value = endDate;
+        form.startTime.value = '';
+        form.endTime.value = '';
         form.type.value = 'customer';
         form.note.value = '';
         form.customerFirstName.value = '';
@@ -458,6 +534,8 @@
         modalTitle.textContent = 'Buchung bearbeiten';
         form.startDate.value = booking.start;
         form.endDate.value = booking.end;
+        form.startTime.value = booking.startTime || '';
+        form.endTime.value = booking.endTime || '';
         form.type.value = booking.type;
         form.note.value = booking.note || '';
         form.customerFirstName.value = booking.customerFirstName || '';
@@ -508,6 +586,8 @@
         const payload = {
             startDate: form.startDate.value,
             endDate: form.endDate.value,
+            startTime: form.startTime.value || null,
+            endTime: form.endTime.value || null,
             type: form.type.value,
             note: form.note.value || null,
             customerFirstName: form.customerFirstName.value || null,
@@ -572,6 +652,7 @@
             height: 'auto',
             selectable: true,
             selectMirror: true,
+            selectLongPressDelay: 250,
             headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
             events: async (info, successCallback, failureCallback) => {
                 try {
@@ -580,9 +661,9 @@
                     const bookings = await api('/trailers/' + trailerId + '/bookings?from=' + from + '&to=' + to);
                     successCallback(bookings.map((booking) => ({
                         id: String(booking.id),
-                        title: booking.type === 'customer'
+                        title: (booking.type === 'customer'
                             ? ([booking.customerFirstName, booking.customerLastName].filter(Boolean).join(' ') || 'Kundenbuchung')
-                            : 'Gesperrt',
+                            : 'Gesperrt') + (booking.startTime ? ' · ' + booking.startTime + ' Uhr' : ''),
                         start: booking.start,
                         end: addDaysIso(booking.end, 1),
                         classNames: ['ea-event', booking.type === 'customer' ? 'ea-event--customer' : 'ea-event--blocked'],
@@ -597,6 +678,13 @@
                 const end = new Date(selection.end);
                 end.setDate(end.getDate() - 1); // FullCalendar's end is exclusive; our API end date is inclusive
                 openForCreate(toIsoDate(selection.start), toIsoDate(end));
+            },
+            // On touch devices a plain tap never fires `select` (that needs a
+            // press-and-drag, see selectLongPressDelay above) — without this,
+            // tapping a day on a phone does nothing. dateClick covers the tap
+            // case with a single-day booking.
+            dateClick: (info) => {
+                openForCreate(info.dateStr, info.dateStr);
             },
             eventClick: (clickInfo) => {
                 openForEdit(clickInfo.event.extendedProps.booking);

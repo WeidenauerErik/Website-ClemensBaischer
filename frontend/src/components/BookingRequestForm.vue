@@ -16,8 +16,15 @@ const form = reactive({
   lastName: '',
   email: '',
   phone: '',
+  startTime: '',
+  endTime: '',
   message: '',
   website: '', // honeypot; stays empty for real visitors
+})
+
+const hourOptions = Array.from({ length: 15 }, (_, i) => {
+  const hour = String(i + 8).padStart(2, '0') // 08:00 – 22:00
+  return `${hour}:00`
 })
 
 const status = ref('idle') // idle | submitting | success | error
@@ -58,6 +65,8 @@ async function onSubmit() {
       message: form.message || null,
       startDate: props.startDate,
       endDate: props.endDate,
+      startTime: form.startTime || null,
+      endTime: form.endTime || null,
       website: form.website || null,
     })
     status.value = 'success'
@@ -103,6 +112,23 @@ async function onSubmit() {
       <p v-else class="booking-form__nights booking-form__nights--hint">
         Bitte im Kalender links Anreise- und Abreisetag auswählen.
       </p>
+
+      <div class="booking-form__row">
+        <label class="booking-form__field">
+          <span>Uhrzeit Abholung</span>
+          <select v-model="form.startTime">
+            <option value="">Beliebig</option>
+            <option v-for="hour in hourOptions" :key="hour" :value="hour">{{ hour }} Uhr</option>
+          </select>
+        </label>
+        <label class="booking-form__field">
+          <span>Uhrzeit Rückgabe</span>
+          <select v-model="form.endTime">
+            <option value="">Beliebig</option>
+            <option v-for="hour in hourOptions" :key="hour" :value="hour">{{ hour }} Uhr</option>
+          </select>
+        </label>
+      </div>
 
       <div class="booking-form__row">
         <label class="booking-form__field">
@@ -254,6 +280,7 @@ async function onSubmit() {
 }
 
 .booking-form__field input,
+.booking-form__field select,
 .booking-form__field textarea {
   font: inherit;
   padding: 10px 12px;
@@ -261,9 +288,11 @@ async function onSubmit() {
   border-radius: 6px;
   color: #2f2f2f;
   resize: vertical;
+  background: #fff;
 }
 
 .booking-form__field input:focus,
+.booking-form__field select:focus,
 .booking-form__field textarea:focus {
   outline: 2px solid #0071c2;
   outline-offset: 1px;

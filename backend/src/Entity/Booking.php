@@ -26,6 +26,12 @@ class Booking
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $endDate;
 
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $startTime = null;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $endTime = null;
+
     #[ORM\Column(length: 20, enumType: BookingType::class)]
     private BookingType $type;
 
@@ -64,10 +70,14 @@ class Booking
         \DateTimeImmutable $endDate,
         BookingType $type,
         AdminUser $createdBy,
+        ?string $startTime = null,
+        ?string $endTime = null,
     ) {
         $this->trailer = $trailer;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->startTime = $startTime;
+        $this->endTime = $endTime;
         $this->type = $type;
         $this->createdBy = $createdBy;
         $this->createdAt = new \DateTimeImmutable();
@@ -112,6 +122,32 @@ class Booking
     public function setEndDate(\DateTimeImmutable $endDate): static
     {
         $this->endDate = $endDate;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getStartTime(): ?string
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(?string $startTime): static
+    {
+        $this->startTime = $startTime;
+        $this->touch();
+
+        return $this;
+    }
+
+    public function getEndTime(): ?string
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(?string $endTime): static
+    {
+        $this->endTime = $endTime;
         $this->touch();
 
         return $this;

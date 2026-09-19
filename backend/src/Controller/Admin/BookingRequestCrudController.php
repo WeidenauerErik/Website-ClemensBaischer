@@ -50,6 +50,8 @@ final class BookingRequestCrudController extends AbstractCrudController
         yield TextareaField::new('message', 'Nachricht')->hideOnIndex()->hideOnForm();
         yield DateField::new('startDate', 'Von');
         yield DateField::new('endDate', 'Bis');
+        yield TextField::new('startTime', 'Uhrzeit Abholung')->hideOnForm()->hideOnIndex();
+        yield TextField::new('endTime', 'Uhrzeit Rückgabe')->hideOnForm()->hideOnIndex();
 
         yield ChoiceField::new('status', 'Status')
             ->setChoices([

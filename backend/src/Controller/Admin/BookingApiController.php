@@ -78,6 +78,8 @@ final class BookingApiController extends AbstractController
                 $input->customerLastName,
                 $input->customerEmail,
                 $input->customerPhone,
+                $input->startTime,
+                $input->endTime,
             );
         } catch (BookingOverlapException $e) {
             throw new ConflictHttpException($e->getMessage());
@@ -108,6 +110,8 @@ final class BookingApiController extends AbstractController
                 $input->customerLastName,
                 $input->customerEmail,
                 $input->customerPhone,
+                $input->startTime,
+                $input->endTime,
             );
         } catch (BookingOverlapException $e) {
             throw new ConflictHttpException($e->getMessage());
@@ -164,6 +168,8 @@ final class BookingApiController extends AbstractController
             'id' => $booking->getId(),
             'start' => $booking->getStartDate()->format('Y-m-d'),
             'end' => $booking->getEndDate()->format('Y-m-d'),
+            'startTime' => $booking->getStartTime(),
+            'endTime' => $booking->getEndTime(),
             'type' => $booking->getType()->value,
             'note' => $booking->getNote(),
             'customerFirstName' => $booking->getCustomerFirstName(),
