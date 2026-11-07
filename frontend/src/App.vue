@@ -120,6 +120,7 @@ onUnmounted(() => {
       <div class="site-footer__inner">
         <p class="site-footer__text">Baischer Clemens · Flurstraße 9, Neukirchen an der Enknach</p>
         <p class="site-footer__text">+43 650 497 73 87 · baischerc@outlook.com</p>
+        <RouterLink :to="{ name: 'impressum' }" class="site-footer__link">Impressum</RouterLink>
       </div>
     </footer>
   </div>
@@ -339,5 +340,14 @@ onUnmounted(() => {
   text-transform: uppercase;
   color: #5f5f5f;
   margin: 0;
+}
+
+.site-footer__link {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #5f5f5f;
+  text-decoration: underline;
 }
 </style>

@@ -56,6 +56,16 @@ const router = createRouter({
           'Kontakt zu Baischer Fleischerei & Catering in Neukirchen an der Enknach: Telefon, WhatsApp, E-Mail und Anfahrt in der Flurstraße 9.',
       },
     },
+    {
+      path: '/impressum',
+      name: 'impressum',
+      component: () => import('../views/ImpressumView.vue'),
+      meta: {
+        title: 'Impressum',
+        description:
+          'Impressum von Baischer Fleischerei & Catering in Neukirchen an der Enknach gemäß § 5 ECG, § 14 UGB und § 25 MedienG.',
+      },
+    },
   ],
 })
 
