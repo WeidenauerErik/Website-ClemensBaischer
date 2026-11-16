@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://baischerclemens.com/sitemap.xml
+Sitemap: https://baischer-fleischerei-catering.com/sitemap.xml
